@@ -1,0 +1,73 @@
+import torch
+import numpy as np
+import matplotlib.pyplot as plt
+
+# GPU vs CPU Selection
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+def part_1():
+    # Create 2 grids
+    X, Y = np.mgrid[-4.0:4.0:0.01, -4.0:4.0:0.01]
+
+    # Put grids into tensors
+    x = torch.Tensor(X)
+    y = torch.Tensor(Y)
+
+    # Transfer to device
+    x = x.to(device)
+    y = y.to(device)
+
+    # Compute
+    z = torch.exp(-(x**2+y**2)/2) # Gaussian
+
+    # Plot
+    plt.imshow(z.cpu().numpy())
+    plt.tight_layout()
+    plt.show()
+    
+def part_2():
+    # Create 2 grids (but complex)
+    Y, X = np.mgrid[-1.3:1.3:0.005, -2:1:0.005]
+    
+    # Load everything into tensors
+    x = torch.Tensor(X)
+    y = torch.Tensor(Y)
+    z = torch.complex(x, y) # This makes our grid actually complex
+    zs = z.clone()
+    ns = torch.zeros_like(z)
+    
+    # Transfer to device
+    # x = x.to(device)
+    # y = y.to(device)
+    z = z.to(device)
+    zs = zs.to(device)
+    ns = ns.to(device)
+    
+    # Create the Mandelbrot set over 200 iterations
+    for i in range(200):
+        # Get new values of z: z^2 + x
+        zs_ = zs*zs + z
+        
+        # Check for divergence
+        not_diverged = torch.abs(zs_) < 4.0
+        
+        # Update variables to compute
+        ns += not_diverged
+        zs = zs_
+    
+    fig = plt.figure(figsize=(16,10))
+    
+    def processFractal(a):
+        """Display an array of iteration counts as a
+        colorful picture of a fractal."""
+        a_cyclic = (6.28*a/20.0).reshape(list(a.shape)+[1])
+        img = np.concatenate([10+20*np.cos(a_cyclic), 30+50*np.sin(a_cyclic), 155-80*np.cos(a_cyclic)], 2)
+        img[a==a.max()] = 0
+        a = img
+        a = np.uint8(np.clip(a, 0, 255))
+        return a
+    plt.imshow(processFractal(ns.cpu().numpy()))
+    plt.tight_layout(pad=0)
+    plt.show()
+
+
