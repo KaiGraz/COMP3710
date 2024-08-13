@@ -35,6 +35,7 @@ def part_2(fractal: int = 0, c = 0.285):
     """ Fractal values follow:
     0 - Mandelbrot set,
     1 - Julia set
+    2 - Collatz Fractal
     
     Where c is added to the Julia set
     """
