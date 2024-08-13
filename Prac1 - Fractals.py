@@ -75,7 +75,7 @@ def part_2(fractal: int = 0, c = 0.285):
         ns += not_diverged
         zs = zs_
     
-    fig = plt.figure(figsize=(16,10))
+    fig = plt.figure(figsize=(8,5))
     
     def processFractal(a):
         """Display an array of iteration counts as a
