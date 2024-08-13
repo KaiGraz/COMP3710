@@ -7,7 +7,8 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 def part_1():
     # Create 2 grids
-    X, Y = np.mgrid[-4.0:4.0:0.01, -4.0:4.0:0.01]
+    len, width, step = 5, 5, 0.1
+    X, Y = np.mgrid[-len:width:step, -len:width:step]
 
     # Put grids into tensors
     x = torch.Tensor(X)
