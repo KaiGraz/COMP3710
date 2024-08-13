@@ -31,7 +31,7 @@ def part_1():
     plt.tight_layout()
     plt.show()
     
-def part_2(fractal: int = 0, c = 0.285):
+def part_2(fractal: int = 0, c = complex(-0.8, 0.156)):
     """ Fractal values follow:
     0 - Mandelbrot set,
     1 - Julia set
