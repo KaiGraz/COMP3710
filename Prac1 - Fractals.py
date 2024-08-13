@@ -30,7 +30,13 @@ def part_1():
     plt.tight_layout()
     plt.show()
     
-def part_2():
+def part_2(fractal: int = 0, c = 0.285):
+    """ Fractal values follow:
+    0 - Mandelbrot set,
+    1 - Julia set
+    
+    Where c is added to the Julia set
+    """
     # Create 2 grids (but complex)
     Y, X = np.mgrid[-1.3:1.3:0.005, -2:1:0.005]
     
@@ -48,13 +54,20 @@ def part_2():
     zs = zs.to(device)
     ns = ns.to(device)
     
-    # Create the Mandelbrot set over 200 iterations
+    # Create the Fractal set over 200 iterations
     for i in range(200):
         # Get new values of z: z^2 + x
-        zs_ = zs*zs + z
+        if fractal == 0:
+            zs_ = zs*zs + z
+        elif fractal == 1:
+            zs_ = zs*zs + c
+            
         
         # Check for divergence
-        not_diverged = torch.abs(zs_) < 4.0
+        if fractal == 0:
+            not_diverged = torch.abs(zs_) < 4.0 
+        elif fractal == 1:
+            not_diverged = torch.abs(zs_) < 2.0
         
         # Update variables to compute
         ns += not_diverged
