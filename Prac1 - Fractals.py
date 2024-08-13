@@ -19,7 +19,11 @@ def part_1():
     y = y.to(device)
 
     # Compute
-    z = torch.exp(-(x**2+y**2)/2) # Gaussian
+    # z = torch.exp(-(x**2+y**2)/2) # Gaussian
+    # z = torch.sin(x) # 2D Sine
+    # z = torch.cos(x) # 2D Cosine
+    z = torch.exp(-(x**2+y**2)/2) * torch.sin(x) # Modulation
+    
 
     # Plot
     plt.imshow(z.cpu().numpy())
