@@ -1,6 +1,7 @@
 import torch
 import numpy as np
 import matplotlib.pyplot as plt
+import math
 
 # GPU vs CPU Selection
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -41,6 +42,7 @@ def part_2(fractal: int = 0, c = 0.285):
     Y, X = np.mgrid[-1:1:0.005, -2:2:0.005]
     # Y, X = np.mgrid[-0.3:0.3:0.0005, -2:-1:0.0005]
     # Y, X = np.mgrid[-0.1:0.1:0.0002, -1.5:-1.25:0.0002]
+    # Y, X = np.mgrid[-0.15:0.15:0.0005, -1.2:-0.75:0.0005] # Collatz
     
     # Load everything into tensors
     x = torch.Tensor(X)
@@ -63,6 +65,11 @@ def part_2(fractal: int = 0, c = 0.285):
             zs_ = zs*zs + z
         elif fractal == 1:
             zs_ = zs*zs + c
+        elif fractal == 2:
+            # Long Version at https://yozh.org/2012/01/12/the_collatz_fractal/
+            # Condensed version (using trig identities)
+            zs_ = (1/4) * (2 + (7*zs) - ((2 + (5*zs)) * torch.cos(math.pi * zs)))
+            # print(zs_)
             
         
         # Check for divergence
@@ -70,6 +77,8 @@ def part_2(fractal: int = 0, c = 0.285):
             not_diverged = torch.abs(zs_) < 4.0 
         elif fractal == 1:
             not_diverged = torch.abs(zs_) < 2.0
+        elif fractal == 2:
+            not_diverged = torch.abs(zs_) < 2
         
         # Update variables to compute
         ns += not_diverged
