@@ -38,7 +38,7 @@ def part_2(fractal: int = 0, c = 0.285):
     Where c is added to the Julia set
     """
     # Create 2 grids (but complex)
-    Y, X = np.mgrid[-1.3:1.3:0.005, -2:1:0.005]
+    Y, X = np.mgrid[-1:1:0.005, -2:2:0.005]
     # Y, X = np.mgrid[-0.3:0.3:0.0005, -2:-1:0.0005]
     # Y, X = np.mgrid[-0.1:0.1:0.0002, -1.5:-1.25:0.0002]
     
