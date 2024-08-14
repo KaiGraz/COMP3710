@@ -2,7 +2,7 @@ import torch
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-
+ 
 # GPU vs CPU Selection
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
@@ -21,7 +21,7 @@ def part_1():
 
     # Compute
     # z = torch.exp(-(x**2+y**2)/2) # Gaussian
-    # z = torch.sin(x) # 2D Sine
+    # z = torch.sin((4 + (x))) # 2D Sine
     # z = torch.cos(x) # 2D Cosine
     z = torch.exp(-(x**2+y**2)/2) * torch.sin(x) # Modulation
     
@@ -53,8 +53,6 @@ def part_2(fractal: int = 0, c = complex(-0.8, 0.156)):
     ns = torch.zeros_like(z)
     
     # Transfer to device
-    # x = x.to(device)
-    # y = y.to(device)
     z = z.to(device)
     zs = zs.to(device)
     ns = ns.to(device)
