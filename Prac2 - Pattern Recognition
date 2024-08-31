@@ -6,6 +6,9 @@ from sklearn.model_selection import cross_val_score
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
+import torch.nn as nn
+import torch.optim as optim
+from sklearn.metrics import classification_report
 
 
 ######################### Data Preparation #########################
@@ -77,6 +80,10 @@ def PCA_eigendecomposition(X_train, X_test, n_components, h, w):
 def PCA_torch(X_train, X_test, n_components, h, w):
     # Convert to pytorch tensor
     X_train_tensor = torch.as_tensor(X_train)
+    X_test_tensor = torch.as_tensor(X_test)
+    # Flatten to 2D
+    X_train_tensor = X_train_tensor.view(X_train_tensor.size(0), -1)
+    X_test_tensor = X_test_tensor.view(X_test_tensor.size(0), -1)
     # Singular Value Decomposition
     U, S, V = torch.pca_lowrank(X_train_tensor, q=n_components, center=False)
     svd_out = U, S, V
@@ -141,10 +148,10 @@ def RFC(X_transformed, X_test_transformed, y_train, y_test, verbose=True):
         print("Which Correct:",correct)
         print("Total Correct:",np.sum(correct))
         print("Accuracy:",np.sum(correct)/total_test)
-        print(classification_report(y_test, predictions, target_names=target_names))
-    return classification_report(y_test, predictions, target_names=target_names)
+        print(classification_report(y_test, predictions, target_names=target_names, zero_division=0))
+    return classification_report(y_test, predictions, target_names=target_names, zero_division=0)
 
-# RFC_report = RFC(X_transformed, X_test_transformed, y_train, y_test, verbose=False)
+# RFC_report = RFC(X_transformed, X_test_transformed, y_train, y_test, verbose=True)
 
 class CNN_Model(nn.Module):
     def __init__(self, input_channels=1, num_classes=10, 
@@ -208,7 +215,7 @@ def CNN(X_transformed, X_test_transformed, y_train, y_test,
         input_channels=1, num_classes=n_classes, 
         conv_filters=32, kernel_size=3, 
         dense_units=128, 
-        learning_rate=0.001, num_epochs=10, batch_size=64, target_names=None, verbose=True):
+        learning_rate=0.01, num_epochs=20, batch_size=64, target_names=None, verbose=True):
     
     
     
