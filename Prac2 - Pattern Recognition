@@ -5,6 +5,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import cross_val_score
 import matplotlib.pyplot as plt
 import numpy as np
+import torch
 
 
 ######################### Data Preparation #########################
@@ -39,7 +40,8 @@ X_train -= mean
 X_test -= mean
 
 def PCA_eigendecomposition(X_train, n_components):
-    #Eigen-decomposition
+    # Eigen-decomposition
+    # Singular Value Decomposition
     U, S, V = np.linalg.svd(X_train, full_matrices=False)
     svd_out = U, S, V
     components = V[:n_components]
@@ -53,7 +55,25 @@ def PCA_eigendecomposition(X_train, n_components):
     
     return eigenfaces, X_transformed, X_test_transformed, svd_out
 
-eigenfaces, X_transformed, X_test_transformed, svd_out = PCA_eigendecomposition(X_train, n_components)
+def PCA_torch(X_train, n_components):
+    # Convert to pytorch tensor
+    X_train_tensor = torch.as_tensor(X_train)
+    # Singular Value Decomposition
+    U, S, V = torch.pca_lowrank(X_train_tensor, q=n_components, center=False)
+    svd_out = U, S, V
+    # Could also use matmul()
+    components = V.T[:n_components]
+    eigenfaces = components.reshape((n_components, h, w))
+    
+    #project into PCA subspace (apply dot product)
+    X_transformed = torch.mm(torch.as_tensor(X_train), components.T)
+    print(X_transformed.shape)
+    X_test_transformed = torch.mm(torch.as_tensor(X_test), components.T)
+    print(X_test_transformed.shape)
+    
+    return eigenfaces, X_transformed, X_test_transformed, svd_out
+
+eigenfaces, X_transformed, X_test_transformed, svd_out = PCA_torch(X_train, n_components)
 
 ######################### Data Analysis #########################
 
