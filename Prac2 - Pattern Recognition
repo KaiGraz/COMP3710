@@ -54,9 +54,8 @@ def data_prep_CNN():
     X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.25, random_state=42)# Compute a PCA (eigenfaces) on the face dataset (treated as unlabeled
     X_train = X_train[:, np.newaxis, :, :] # Only 1 channel
     X_test = X_test[:, np.newaxis, :, :]
-    print(y_train.shape, y_test.shape)
     return X_test, X_train, y_train, y_test
-    
+
 
 n_components, h, w, X_train, X_test, y_train, y_test, n_classes, n_samples, n_features, target_names = data_prep_basic()
 X_test2, X_train2, y_train2, y_test2 = data_prep_CNN()
@@ -99,7 +98,7 @@ def PCA_torch(X_train, X_test, n_components, h, w):
     
     return eigenfaces, X_transformed, X_test_transformed, svd_out
 
-eigenfaces, X_transformed, X_test_transformed, svd_out = PCA_torch(X_train2, X_test2, n_components,h ,w)
+# eigenfaces, X_transformed, X_test_transformed, svd_out = PCA_torch(X_train2, X_test2, n_components,h ,w)
 
 ######################### Data Analysis #########################
 
@@ -211,20 +210,20 @@ class CNN_Model(nn.Module):
         x = self.softmax(self.fc2(x))
         return x
 
-def CNN(X_transformed, X_test_transformed, y_train, y_test, 
+def CNN(X_train, X_test, y_train, y_test, 
         input_channels=1, num_classes=n_classes, 
         conv_filters=32, kernel_size=3, 
         dense_units=128, 
-        learning_rate=0.01, num_epochs=20, batch_size=64, target_names=None, verbose=True):
+        learning_rate=0.0013, num_epochs=20, batch_size=64, target_names=None, verbose=True):
     
     
     
     # Convert input data to PyTorch tensors
-    # X_transformed = torch.tensor(X_transformed)
+    X_train = torch.tensor(X_train)
     y_train = torch.tensor(y_train)
-    # X_test_transformed = torch.tensor(X_test_transformed)
+    X_test = torch.tensor(X_test)
     y_test = torch.tensor(y_test)
-    height, width = X_transformed.shape[2:4]
+    height, width = X_train.shape[2:4]
     
     # Instantiate the model, loss function, and optimizer
     model = CNN_Model(input_channels=input_channels, 
@@ -240,12 +239,12 @@ def CNN(X_transformed, X_test_transformed, y_train, y_test,
     # Training loop
     model.train()
     for epoch in range(num_epochs):
-        permutation = torch.randperm(X_transformed.size()[0])
-        for i in range(0, X_transformed.size()[0], batch_size):
+        permutation = torch.randperm(X_train.size()[0])
+        for i in range(0, X_train.size()[0], batch_size):
             optimizer.zero_grad()
             
             indices = permutation[i:i+batch_size]
-            batch_x, batch_y = X_transformed[indices], y_train[indices]
+            batch_x, batch_y = X_train[indices], y_train[indices]
             
             outputs = model(batch_x)
             loss = loss_fn(outputs, batch_y)
@@ -258,11 +257,11 @@ def CNN(X_transformed, X_test_transformed, y_train, y_test,
     # Evaluation
     model.eval()
     with torch.no_grad():
-        predictions = model(X_test_transformed)
+        predictions = model(X_test)
         _, predicted_labels = torch.max(predictions, 1)
         
         correct = (predicted_labels == y_test).numpy()
-        total_test = len(X_test_transformed)
+        total_test = len(X_test)
         if verbose:
             print("Total Testing:", total_test)
             print("Predictions:", predicted_labels.numpy())
@@ -273,11 +272,8 @@ def CNN(X_transformed, X_test_transformed, y_train, y_test,
     
     return classification_report(y_test.numpy(), predicted_labels.numpy(), target_names=target_names, zero_division=0)
 
-# Convert 2D into 4D
-new_height = 15
-new_width = 10
-X_transformed = X_transformed.view(-1, 1, new_height, new_width)
-X_test_transformed = X_test_transformed.view(-1, 1, new_height, new_width)
+
+CNN_report = CNN(X_train2, X_test2, y_train2, y_test2, verbose=False) # No PCA
+print(CNN_report)
 
 
-CNN_report = CNN(X_transformed, X_test_transformed, y_train2, y_test2, verbose=True) # With PCA
