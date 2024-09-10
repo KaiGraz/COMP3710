@@ -10,12 +10,17 @@ import datetime
 
 torch.manual_seed(69)
 
-# LOCATION = "keras_png_slices_data/keras_png_slices_test"
+# LOCATION = "/home/groups/comp3710/OASIS/keras_png_slices_train"
+# OUT_LOCATION = "/home/Student/s4696386/GAN_evidence"
 LOCATION = "keras_png_slices_data"
+OUT_LOCATION = "GAN_evidence"
+
+lr = 0.0001
+num_epochs = 4
+batch_size = 16
+
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
-
-batch_size = 16
 
 data_transform = transforms.Compose([
     transforms.Resize((128, 128)),
@@ -80,8 +85,7 @@ class Generator(nn.Module):
 discriminator = Discriminator().to(device)
 generator = Generator().to(device)
 
-lr = 0.0001
-num_epochs = 1
+
 loss_function = nn.BCELoss()
 
 optimizer_discriminator = torch.optim.Adam(discriminator.parameters(), lr=lr)
@@ -137,14 +141,12 @@ for epoch in range(num_epochs):
         plt.yticks([])
     if saving:
         now = str(datetime.datetime.now()).replace(" ", "_").replace(":", "-")
-        name = "GAN_evidence/NewBrains" + now + ".png"
+        name = OUT_LOCATION + "/Brains" + now + ".png"
         plt.savefig(name)
-    plt.show()
 print("Done")
 
 plt.plot(losses)
-plt.show()
 if saving:
     now = str(datetime.datetime.now()).replace(" ", "_").replace(":", "-")
-    name = "GAN_evidence/NewPlot" + now + ".png"
+    name = OUT_LOCATION + "/NewPlot" + now + ".png"
     plt.savefig(name)
