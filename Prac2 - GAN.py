@@ -3,6 +3,7 @@ import torchvision
 import torchvision.transforms as transforms
 import torch.nn as nn
 import matplotlib.pyplot as plt
+import datetime
 
 
 # With support from https://realpython.com/generative-adversarial-networks/
@@ -85,8 +86,7 @@ loss_function = nn.BCELoss()
 optimizer_discriminator = torch.optim.Adam(discriminator.parameters(), lr=lr)
 optimizer_generator = torch.optim.Adam(generator.parameters(), lr=lr)
 
-d_loss = []
-g_loss = []
+losses = []
 
 for epoch in range(num_epochs):
     for n, (real_samples, _) in enumerate(train_data_loader):
@@ -124,23 +124,30 @@ for epoch in range(num_epochs):
         optimizer_generator.step()
 
         # Show loss
-        d_loss.append((loss_discriminator.item(), loss_generator.item()))
-        # g_loss.append((n, loss_generator.item()))
-        # if (n % batch_size) == 0:
-            
+        losses.append((loss_discriminator.item(), loss_generator.item()))
+        if (n % batch_size) == 0:
+            print(n)
+    
+    saving = False        
     # Look at the generated things
     latent_space_samples = torch.randn(batch_size, Generator.in_size).to(device)
     generated_samples = generator(latent_space_samples)
     generated_samples = generated_samples.cpu().detach()
-    print("Showing")
     for i in range(16):
         ax = plt.subplot(4, 4, i + 1)
         plt.imshow(generated_samples[i].reshape(128, 128), cmap="gray_r")
         plt.xticks([])
         plt.yticks([])
+    if saving:
+        now = str(datetime.datetime.now()).replace(" ", "_").replace(":", "-")
+        name = "GAN_evidence/NewBrains" + now + ".png"
+        plt.savefig(name)
     plt.show()
 print("Done")
 
-losses = plt.plot(d_loss)
+plt.plot(losses)
 plt.show()
-# plt.savefig("Myfile.png",format="png")
+if saving:
+    now = str(datetime.datetime.now()).replace(" ", "_").replace(":", "-")
+    name = "GAN_evidence/NewPlot" + now + ".png"
+    plt.savefig(name)
