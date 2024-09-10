@@ -12,7 +12,7 @@ torch.manual_seed(69)
 
 # LOCATION = "/home/groups/comp3710/OASIS/keras_png_slices_train"
 # OUT_LOCATION = "/home/Student/s4696386/GAN_evidence"
-LOCATION = "keras_png_slices_data"
+LOCATION = "keras_png_slices_data/keras_png_slices_test"
 OUT_LOCATION = "GAN_evidence"
 
 lr = 0.0001
@@ -97,10 +97,10 @@ for epoch in range(num_epochs):
     for n, (real_samples, _) in enumerate(train_data_loader):
         # Data for training the discriminator
         real_samples = real_samples.to(device)
-        real_samples_labels = torch.ones((batch_size, 1)).to(device)
+        real_samples_labels = torch.ones((real_samples.size(0), 1)).to(device)
         latent_space_samples = torch.randn((batch_size, Generator.in_size)).to(device)
         generated_samples = generator(latent_space_samples)
-        generated_samples_labels = torch.zeros((batch_size, 1)).to(device)
+        generated_samples_labels = torch.zeros((generated_samples.size(0), 1)).to(device)
         all_samples = torch.cat((real_samples, generated_samples))
         all_samples_labels = torch.cat(
             (real_samples_labels, generated_samples_labels))
