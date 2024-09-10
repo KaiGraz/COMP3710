@@ -10,6 +10,7 @@ import datetime
 
 torch.manual_seed(69)
 
+# LOCATION = "keras_png_slices_data/keras_png_slices_test"
 LOCATION = "keras_png_slices_data"
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -90,8 +91,6 @@ losses = []
 
 for epoch in range(num_epochs):
     for n, (real_samples, _) in enumerate(train_data_loader):
-        if n % 2:
-            continue
         # Data for training the discriminator
         real_samples = real_samples.to(device)
         real_samples_labels = torch.ones((batch_size, 1)).to(device)
@@ -125,10 +124,8 @@ for epoch in range(num_epochs):
 
         # Show loss
         losses.append((loss_discriminator.item(), loss_generator.item()))
-        if (n % batch_size) == 0:
-            print(n)
     
-    saving = False        
+    saving = True     
     # Look at the generated things
     latent_space_samples = torch.randn(batch_size, Generator.in_size).to(device)
     generated_samples = generator(latent_space_samples)
