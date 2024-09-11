@@ -162,9 +162,15 @@ for epoch in range(num_epochs):
         now = str(datetime.datetime.now()).replace(" ", "_").replace(":", "-")
         name = OUT_LOCATION + "/Brains" + now + ".png"
         plt.savefig(name)
+        plt.clf()
+        
 print("Done")
 
-plt.plot(losses)
+plt.figure()  # Start a new figure to avoid overlapping with subplots
+discriminator_losses, generator_losses = zip(*losses)  # Unzip the losses
+plt.plot(discriminator_losses, label="Discriminator Loss")
+plt.plot(generator_losses, label="Generator Loss")
+plt.legend()
 if saving:
     now = str(datetime.datetime.now()).replace(" ", "_").replace(":", "-")
     name = OUT_LOCATION + "/NewPlot" + now + ".png"
