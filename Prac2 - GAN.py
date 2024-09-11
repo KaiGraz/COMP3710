@@ -29,17 +29,13 @@ data_transform = transforms.Compose([
     ])
 train_data = torchvision.datasets.ImageFolder(LOCATION, data_transform)
 
+# Filter out all samples from unwanted classes
 classes_to_remove = [train_data.class_to_idx[i] for i in train_data.classes if "seg" in i]
-
-# Filter out all samples from the class
 filtered_samples = [sample for sample in train_data.samples if sample[1] != classes_to_remove]
 train_data.samples = filtered_samples
 
+# Loads data into dataloader, and applies data transformations
 train_data_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, shuffle=True)
-
-# Extract the first batch of images
-data_iter = iter(train_data_loader)
-images, labels = next(data_iter)
 
 class Discriminator(nn.Module):
     def __init__(self):
@@ -68,7 +64,6 @@ class Discriminator(nn.Module):
     def forward(self, x):
         x = self.model(x)
         return x.view(x.size(0), -1)  # Flatten to [batch_size, 1] for binary classification
-
 
 class Generator(nn.Module):
     in_size = 100
@@ -103,7 +98,6 @@ class Generator(nn.Module):
 
 discriminator = Discriminator().to(device)
 generator = Generator().to(device)
-
 
 loss_function = nn.BCELoss()
 
@@ -149,7 +143,7 @@ for epoch in range(num_epochs):
         losses.append((loss_discriminator.item(), loss_generator.item()))
     
     saving = True     
-    # Look at the generated things
+    # Save the generated images
     latent_space_samples = torch.randn(batch_size, Generator.in_size).to(device)
     generated_samples = generator(latent_space_samples)
     generated_samples = generated_samples.cpu().detach()
@@ -164,7 +158,6 @@ for epoch in range(num_epochs):
         plt.savefig(name)
         plt.clf()
         
-print("Done")
 
 plt.figure()  # Start a new figure to avoid overlapping with subplots
 discriminator_losses, generator_losses = zip(*losses)  # Unzip the losses
@@ -176,3 +169,5 @@ if saving:
     now = str(datetime.datetime.now()).replace(" ", "_").replace(":", "-")
     name = OUT_LOCATION + "/NewPlot" + now + ".png"
     plt.savefig(name)
+
+print("Done")
