@@ -174,13 +174,12 @@ def ResNet(num_epochs=10, lr = 0.1, momentum = 0.9, weight_decay = 5e-4, verbose
             
             total += labels.size(0)
             correct = (predicted_labels == labels).sum().item()
+        accuracy = correct / total
         
         if verbose:
             print("Total Testing:", total)
             print("Predictions:", predicted_labels.numpy())
-            print("Which Correct:", correct)
-            print("Total Correct:", np.sum(correct))
-            print("Accuracy:", np.sum(correct) / total)
+            print("Accuracy:", accuracy)
         
 
 ResNet(num_epochs=2)
