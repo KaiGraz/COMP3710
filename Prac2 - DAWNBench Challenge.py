@@ -182,4 +182,4 @@ def ResNet(num_epochs=10, lr = 0.1, momentum = 0.9, weight_decay = 5e-4, verbose
             print("Accuracy:", accuracy)
         
 
-ResNet(num_epochs=2)
+ResNet(num_epochs=20)

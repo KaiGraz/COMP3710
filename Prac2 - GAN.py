@@ -14,7 +14,7 @@ torch.manual_seed(69)
 LOCATION = "/home/groups/comp3710/OASIS" if os.path.exists("/home/groups/comp3710/OASIS") else "keras_png_slices_data"
 OUT_LOCATION = "/home/Student/s4696386/GAN_evidence" if os.path.exists("/home/Student/s4696386/GAN_evidence") else "GAN_evidence"
 
-lr = 0.0001
+lr = 0.00001
 num_epochs = 10
 batch_size = 64
 
