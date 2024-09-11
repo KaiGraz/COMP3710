@@ -42,50 +42,63 @@ data_iter = iter(train_data_loader)
 images, labels = next(data_iter)
 
 class Discriminator(nn.Module):
-    size = 256
-    out_size = 16384
     def __init__(self):
-        super().__init__()
+        super(Discriminator, self).__init__()
         self.model = nn.Sequential(
-            nn.Linear(self.out_size, 4*self.size),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(4*self.size, 2*self.size),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(2*self.size, self.size),
-            nn.ReLU(),
-            nn.Dropout(0.3),
-            nn.Linear(self.size, 1),
-            nn.Sigmoid(),
+            # Input shape: [batch_size, 1, 128, 128]
+            nn.Conv2d(1, 64, kernel_size=4, stride=2, padding=1),  # Output: [batch_size, 64, 64, 64]
+            nn.LeakyReLU(0.2, inplace=True),
+            
+            nn.Conv2d(64, 128, kernel_size=4, stride=2, padding=1),  # Output: [batch_size, 128, 32, 32]
+            nn.BatchNorm2d(128),
+            nn.LeakyReLU(0.2, inplace=True),
+            
+            nn.Conv2d(128, 256, kernel_size=4, stride=2, padding=1),  # Output: [batch_size, 256, 16, 16]
+            nn.BatchNorm2d(256),
+            nn.LeakyReLU(0.2, inplace=True),
+            
+            nn.Conv2d(256, 512, kernel_size=4, stride=2, padding=1),  # Output: [batch_size, 512, 8, 8]
+            nn.BatchNorm2d(512),
+            nn.LeakyReLU(0.2, inplace=True),
+            
+            nn.Conv2d(512, 1, kernel_size=8),  # Output: [batch_size, 1, 1, 1]
+            nn.Sigmoid()
         )
-
-    def forward(self, x):
-        x = x.view(x.size(0), self.out_size)
-        output = self.model(x)
-        return output
     
+    def forward(self, x):
+        x = self.model(x)
+        return x.view(x.size(0), -1)  # Flatten to [batch_size, 1] for binary classification
+
+
 class Generator(nn.Module):
     in_size = 100
-    size = 256
-    out_size = 16384
     def __init__(self):
-        super().__init__()
+        super(Generator, self).__init__()
         self.model = nn.Sequential(
-            nn.Linear(self.in_size, self.size),
-            nn.ReLU(),
-            nn.Linear(self.size, 2*self.size),
-            nn.ReLU(),
-            nn.Linear(2*self.size, 4*self.size),
-            nn.ReLU(),
-            nn.Linear(4*self.size, 16384),
-            nn.Tanh(),
+            # Input latent vector size: [batch_size, 100, 1, 1]
+            nn.ConvTranspose2d(100, 512, kernel_size=8, stride=1, padding=0),  # Output: [batch_size, 512, 8, 8]
+            nn.BatchNorm2d(512),
+            nn.ReLU(True),
+            
+            nn.ConvTranspose2d(512, 256, kernel_size=4, stride=2, padding=1),  # Output: [batch_size, 256, 16, 16]
+            nn.BatchNorm2d(256),
+            nn.ReLU(True),
+            
+            nn.ConvTranspose2d(256, 128, kernel_size=4, stride=2, padding=1),  # Output: [batch_size, 128, 32, 32]
+            nn.BatchNorm2d(128),
+            nn.ReLU(True),
+            
+            nn.ConvTranspose2d(128, 64, kernel_size=4, stride=2, padding=1),  # Output: [batch_size, 64, 64, 64]
+            nn.BatchNorm2d(64),
+            nn.ReLU(True),
+            
+            nn.ConvTranspose2d(64, 1, kernel_size=4, stride=2, padding=1),  # Output: [batch_size, 1, 128, 128]
+            nn.Tanh()  # Output in range [-1, 1] (assuming normalized images)
         )
-
+    
     def forward(self, x):
-        output = self.model(x)
-        output = output.view(x.size(0), 1, 128, 128)
-        return output
+        x = x.view(x.size(0), 100, 1, 1)  # Reshape input latent vector to [batch_size, 100, 1, 1]
+        return self.model(x)
 
 
 discriminator = Discriminator().to(device)
