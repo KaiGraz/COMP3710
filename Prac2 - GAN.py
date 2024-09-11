@@ -16,7 +16,7 @@ OUT_LOCATION = "/home/Student/s4696386/GAN_evidence" if os.path.exists("/home/St
 
 lr = 0.001
 num_epochs = 10
-batch_size = 128
+batch_size = 64
 
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
@@ -170,6 +170,7 @@ plt.figure()  # Start a new figure to avoid overlapping with subplots
 discriminator_losses, generator_losses = zip(*losses)  # Unzip the losses
 plt.plot(discriminator_losses, label="Discriminator Loss")
 plt.plot(generator_losses, label="Generator Loss")
+plt.ylim(-2, 2) # Prevents large losses from obscuring details
 plt.legend()
 if saving:
     now = str(datetime.datetime.now()).replace(" ", "_").replace(":", "-")
