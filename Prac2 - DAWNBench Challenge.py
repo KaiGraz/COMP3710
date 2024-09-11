@@ -4,6 +4,7 @@ import torch.utils
 import torch.utils.data
 import torchvision
 from torchvision import transforms
+import time
 
 # With support from Shakes (Summer of AI 2022):
 # https://www.youtube.com/watch?v=pvwxIOIqgmc&list=PLKB59ot0pqdU-VbpdkKgNLXuHx2OramTt
@@ -132,6 +133,8 @@ def ResNet(num_epochs=10, lr = 0.1, momentum = 0.9, weight_decay = 5e-4, verbose
     
     
     # Train the model
+    # Start timing the training
+    start_train_time = time.time()
     model.train()
     print("Training")
     for epoch in range(num_epochs):
@@ -152,7 +155,9 @@ def ResNet(num_epochs=10, lr = 0.1, momentum = 0.9, weight_decay = 5e-4, verbose
                 print(f"Epoch[{epoch+1}/{num_epochs}], Step [{i+1}/{total_step}], Loss: {loss.item():.5f}")
         scheduler.step()
     
-    print("Training done, now Testing")
+    end_train_time = time.time()
+    training_time = end_train_time - start_train_time
+    print(f"Training done in: {training_time:.2f} seconds")
     
     # Test the model
     model.eval()
