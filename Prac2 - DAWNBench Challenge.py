@@ -173,7 +173,7 @@ def ResNet(num_epochs=10, lr = 0.1, momentum = 0.9, weight_decay = 5e-4, verbose
         
         if verbose:
             print("Total Testing:", total)
-            print("Predictions:", predicted_labels.numpy())
+            print("Predictions:", predicted_labels.cpu().numpy())
             print("Accuracy:", accuracy)
         
 
