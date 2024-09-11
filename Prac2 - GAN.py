@@ -11,12 +11,12 @@ import os
 
 torch.manual_seed(69)
 
-LOCATION = "/home/groups/comp3710/OASIS/keras_png_slices_train" if os.path.exists("/home/groups/comp3710/OASIS/keras_png_slices_train") else "keras_png_slices_data"
+LOCATION = "/home/groups/comp3710/OASIS" if os.path.exists("/home/groups/comp3710/OASIS") else "keras_png_slices_data"
 OUT_LOCATION = "/home/Student/s4696386/GAN_evidence" if os.path.exists("/home/Student/s4696386/GAN_evidence") else "GAN_evidence"
 
 lr = 0.001
-num_epochs = 4
-batch_size = 16
+num_epochs = 10
+batch_size = 128
 
 
 device = "cuda" if torch.cuda.is_available() else "cpu"
