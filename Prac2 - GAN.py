@@ -28,6 +28,13 @@ data_transform = transforms.Compose([
     transforms.Normalize((0.5,), (0.5,)),
     ])
 train_data = torchvision.datasets.ImageFolder(LOCATION, data_transform)
+
+classes_to_remove = [train_data.class_to_idx[i] for i in train_data.classes if "seg" in i]
+
+# Filter out all samples from the class
+filtered_samples = [sample for sample in train_data.samples if sample[1] != classes_to_remove]
+train_data.samples = filtered_samples
+
 train_data_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, shuffle=True)
 
 # Extract the first batch of images
