@@ -1,10 +1,5 @@
-from sklearn.model_selection import train_test_split
-from sklearn.metrics import classification_report
-import matplotlib.pyplot as plt
-import numpy as np
 import torch
 import torch.nn as nn
-import torch.optim as optim
 import torch.utils
 import torch.utils.data
 import torchvision
