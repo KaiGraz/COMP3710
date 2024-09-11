@@ -14,7 +14,7 @@ torch.manual_seed(69)
 LOCATION = "/home/groups/comp3710/OASIS" if os.path.exists("/home/groups/comp3710/OASIS") else "keras_png_slices_data"
 OUT_LOCATION = "/home/Student/s4696386/GAN_evidence" if os.path.exists("/home/Student/s4696386/GAN_evidence") else "GAN_evidence"
 
-lr = 0.001
+lr = 0.0001
 num_epochs = 10
 batch_size = 64
 
@@ -110,13 +110,14 @@ for epoch in range(num_epochs):
     for n, (real_samples, _) in enumerate(train_data_loader):
         # Data for training the discriminator
         real_samples = real_samples.to(device)
-        real_samples_labels = torch.ones((real_samples.size(0), 1)).to(device)
+
+        # Implements label smoothing by using 0.9 and 0.1
+        real_samples_labels = torch.ones((real_samples.size(0), 1)).to(device) * 0.9
         latent_space_samples = torch.randn((batch_size, Generator.in_size)).to(device)
         generated_samples = generator(latent_space_samples)
-        generated_samples_labels = torch.zeros((generated_samples.size(0), 1)).to(device)
+        generated_samples_labels = torch.zeros((generated_samples.size(0), 1)).to(device) + 0.1
         all_samples = torch.cat((real_samples, generated_samples))
-        all_samples_labels = torch.cat(
-            (real_samples_labels, generated_samples_labels))
+        all_samples_labels = torch.cat((real_samples_labels, generated_samples_labels))
 
         # Training the discriminator
         discriminator.zero_grad()
